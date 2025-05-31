@@ -215,6 +215,12 @@ aws ecs update-service \
   --load-balancers "targetGroupArn=${targetGroupArn},containerName=${containerName},containerPort=${containerPort}"
 ```
 
+# create ecr and login
+```
+aws ecr get-login-password --region ap-southeast-1 \
+| docker login --username AWS \
+--password-stdin 058264383156.dkr.ecr.ap-southeast-1.amazonaws.com
+```
 
 
 

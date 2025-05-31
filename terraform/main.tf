@@ -33,3 +33,9 @@ module "ecs_cluster" {
     }
   }
 }
+
+# ecr repository for nginx image
+resource "aws_ecr_repository" "nginx" {
+  name = "nginx"
+  force_delete = true
+}

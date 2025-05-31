@@ -53,6 +53,33 @@ resource "aws_iam_role_policy_attachment" "task_role_policy" {
   depends_on = [ aws_iam_role.task_role ]
 }
 
+### ECR Access Policy for Task Execution Role ###
+resource "aws_iam_policy" "ecr_access_policy" {
+  name        = "${local.appName}-ecr-access-policy"
+  description = "Policy for ECS task execution role to access ECR"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:GetAuthorizationToken"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecr_access_policy_attachment" {
+  role       = aws_iam_role.task_execution_role.name
+  policy_arn = aws_iam_policy.ecr_access_policy.arn
+  depends_on = [ aws_iam_role_policy_attachment.task_execution_policy ]
+}
 
 ### ECS Task Definition for Service ###
 
@@ -71,14 +98,14 @@ resource "aws_ecs_task_definition" "nginx" {
   container_definitions = jsonencode([
     {
       "name": "nginx",
-      "image": "nginx:latest",
+      "image": "058264383156.dkr.ecr.ap-southeast-1.amazonaws.com/nginx:v1",
       "cpu": 0,
       "portMappings": [
         {
-          "containerPort": 80,
-          "hostPort": 80,
+          "containerPort": 3000,
+          "hostPort": 3000,
           "protocol": "tcp",
-          "name": "nginx-80-tcp",
+          "name": "nginx-3000-tcp",
           "appProtocol": "http"
         }
       ],
