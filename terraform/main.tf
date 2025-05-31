@@ -20,3 +20,16 @@ module "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 }
+
+module "ecs_cluster" {
+  source = "terraform-aws-modules/ecs/aws"
+
+  cluster_name = local.name
+
+  # Capacity provider
+  fargate_capacity_providers = {
+    FARGATE = {
+      default_capacity_provider_strategy = {}
+    }
+  }
+}
